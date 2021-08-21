@@ -16,7 +16,7 @@ edit="Alt+e"
 delete="Alt+d"
 
 # colors
-help_color="#334433"
+help_color="#ffff96"
 
 # source global config
 if [[ -f /etc/buku_run.config ]]
@@ -246,7 +246,8 @@ addTags () {
         if [[ $1 == "--update" ]]; then
             buku -u "${id}" --tag ${tags}
         else
-            buku -a ${inserturl} ${tags}
+						# use _bukuaddbase so that time_added is set in db
+						$HOME/dev/tools/buku-utils/_bukuaddbase ${inserturl} ${tags}
         fi
     fi
 }
@@ -258,15 +259,13 @@ BEGIN {
   FS="\n"
 }
 {
-  if ($3 == "")
-    $3 = " # NOTAG"
   id = gensub(/([0-9]+)\.(.*)/, "\\1", "g", $1)
   url = substr(gensub(/\s+> (.*)/, "\\1", "g", $2),0,max)
   tags = gensub(/\s+# (.*)/, "\\1", "g", $3)
   title = substr(gensub(/[0-9]+\.\s*(.*)/, "\\1", "g", $1),0,max)
 
   if (type == 1)
-    print id "\t" url "\t" tags
+    print id "\t" title "\t" tags "\t" url
   else
     print id "\t" title "\t" tags
     if (type == 3)
